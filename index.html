@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Story Gradation Thumbnail Generator</title>
+
+<!-- Fonts -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sniglet:wght@400;">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jua:wght=400;">
+
+<style>
+:root {
+  --bg-deep: #02343F;
+  --accent: #F0EDCC;
+  --sidebar-width: 320px;
+  --panel-bg: rgba(255, 255, 255, 0.05);
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Pretendard', sans-serif;
+}
+
+body {
+  background-color: #011f26;
+  color: #fff;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+aside {
+  width: var(--sidebar-width);
+  background: var(--bg-deep);
+  border-right: 1px solid var(--border-color);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bg-deep);
+  font-weight: 800;
+}
+
+h1 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.section-title {
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 12px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.8);
+}
+
+select, input[type="number"] {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.grid-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.btn-small {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.2s;
+}
+
+.btn-small:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-small.active {
+  background: #014c5c;
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.color-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--panel-bg);
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+input[type="color"] {
+  -webkit-appearance: none;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+.color-hex {
+  font-family: 'Pretendard';
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  background: transparent;
+  border: none;
+  width: 80px;
+  text-align: left;
+  cursor: text;
+}
+
+.color-hex:focus {
+  outline: none;
+  color: #fff;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #012830;
+  padding: 40px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.header-actions {
+  position: absolute;
+  top: 24px;
+  right: 40px;
+}
+
+.btn-download {
+  background: #014c5c;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.btn-download:hover {
+  background: #02667a;
+}
+
+.canvas-container {
+  position: relative;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  background: #000;
+  line-height: 0;
+}
+
+canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.preview-info {
+  margin-top: 24px;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+  display: flex;
+  gap: 24px;
+  letter-spacing: 0.05em;
+}
+
+.tip-box {
+  background: rgba(240, 237, 204, 0.05);
+  border-left: 3px solid var(--accent);
+  padding: 16px;
+  border-radius: 0 8px 8px 0;
+  margin-top: auto;
+}
+
+.tip-box h4 {
+  font-size: 13px;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.tip-box p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* =========================
+   📱 Mobile Responsive UI
+========================= */
+@media (max-width: 768px) {
+
+  body {
+    flex-direction: column;
+    height: auto;
+    overflow: auto;
+  }
+
+  aside {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px;
+    gap: 16px;
+  }
+
+  main {
+    padding: 20px;
+    justify-content: flex-start;
+  }
+
+  .header-actions {
+    position: static;
+    margin-bottom: 16px;
+    align-self: flex-end;
+  }
+
+  .canvas-container {
+    width: 100%;
+  }
+
+  canvas {
+    width: 100%;
+    height: auto;
+  }
+
+  .grid-buttons {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .btn-small {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  select,
+  input[type="number"],
+  .color-hex {
+    font-size: 16px; /* iOS zoom 방지 */
+  }
+
+  .preview-info {
+    margin-top: 16px;
+    font-size: 11px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .tip-box {
+    font-size: 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main>
+  <div class="header-actions">
+    <button class="btn-download" onclick="downloadImage()">Download</button>
+  </div>
+
+  <div class="canvas-container">
+    <canvas id="canvas" width="1280" height="720"></canvas>
+  </div>
+
+  <div class="preview-info">
+    <span>LIVE PREVIEW MODE</span>
+    <span>|</span>
+    <span>1280 × 720 PX</span>
+    <span>|</span>
+    <span>16:9 RATIO</span>
+  </div>
+</main>
+
+<aside>
+  <div class="logo-section">
+    <h1>Story Gradation Thumbnail</h1>
+  </div>
+
+  <div class="control-group">
+    <p class="section-title">Typography</p>
+
+    <label>Font Family</label>
+    <select id="fontSelect">
+      <option value="Inter" style="background-color: #02343F;">Inter</option>
+      <option value="Pretendard" style="background-color: #02343F;">Pretendard</option>
+      <option value="Jua" style="background-color: #02343F;">Jua</option>
+      <option value="Sniglet" style="background-color: #02343F;">Sniglet</option>
+    </select>
+
+    <label style="margin-top: 4px;">Font Size (px)</label>
+    <input type="number" id="fontSizeInput" value="175">
+
+    <div class="grid-buttons">
+      <button class="btn-small" onclick="setSize(125)">125px</button>
+      <button class="btn-small" onclick="setSize(150)">150px</button>
+      <button class="btn-small active" onclick="setSize(175)">175px</button>
+      <button class="btn-small" onclick="setSize(200)">200px</button>
+      <button class="btn-small" onclick="setSize(225)">225px</button>
+      <button class="btn-small" onclick="setSize(250)">250px</button>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <p class="section-title">Colors & Gradients</p>
+
+    <label>Background Color 1</label>
+    <div class="color-row">
+      <input type="text" class="color-hex" id="bgHex1" value="#02343F" maxlength="7">
+      <input type="color" id="bgColor1" value="#02343F">
+    </div>
+
+    <label>Background Color 2</label>
+    <div class="color-row">
+      <input type="text" class="color-hex" id="bgHex2" value="#02343F" maxlength="7">
+      <input type="color" id="bgColor2" value="#02343F">
+    </div>
+
+    <label style="margin-top: 10px;">Text Color 1</label>
+    <div class="color-row">
+      <input type="text" class="color-hex" id="txtHex1" value="#F0EDCC" maxlength="7">
+      <input type="color" id="txtColor1" value="#F0EDCC">
+    </div>
+
+    <label>Text Color 2</label>
+    <div class="color-row">
+      <input type="text" class="color-hex" id="txtHex2" value="#F0EDCC" maxlength="7">
+      <input type="color" id="txtColor2" value="#F0EDCC">
+    </div>
+
+    <label>Glow (px)</label>
+    <div class="color-row" style="width:120px">
+      <input type="checkbox" id="glowSelect">
+      <input type="number" id="glowSize" value="15" min="0" style="width:70px;">
+    </div>
+
+    <div class="color-row">
+      <input type="text" class="color-hex" id="glowHex" value="#F0EDCC" maxlength="7">
+      <input type="color" id="glowColor" value="#F0EDCC">
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <h4>💡 Pro Tip</h4>
+    <p>Story is Talmo</p>
+  </div>
+</aside>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+const fontSelect = document.getElementById('fontSelect');
+const fontSizeInput = document.getElementById('fontSizeInput');
+
+const bgColor1 = document.getElementById('bgColor1');
+const bgColor2 = document.getElementById('bgColor2');
+const txtColor1 = document.getElementById('txtColor1');
+const txtColor2 = document.getElementById('txtColor2');
+
+const bgHex1 = document.getElementById('bgHex1');
+const bgHex2 = document.getElementById('bgHex2');
+const txtHex1 = document.getElementById('txtHex1');
+const txtHex2 = document.getElementById('txtHex2');
+
+const glowEnabled = document.getElementById('glowSelect');
+const glowColor = document.getElementById('glowColor');
+const glowHex = document.getElementById('glowHex');
+const glowSize = document.getElementById('glowSize');
+
+function setSize(size) {
+  fontSizeInput.value = size;
+  document.querySelectorAll('.btn-small').forEach(btn => {
+    btn.classList.toggle('active', btn.innerText === size + 'px');
+  });
+  render();
+}
+
+function updateHexLabels() {
+  bgHex1.value = bgColor1.value.toUpperCase();
+  bgHex2.value = bgColor2.value.toUpperCase();
+  txtHex1.value = txtColor1.value.toUpperCase();
+  txtHex2.value = txtColor2.value.toUpperCase();
+  glowHex.value = glowColor.value.toUpperCase();
+}
+
+function render() {
+  const w = canvas.width;
+  const h = canvas.height;
+  const size = parseInt(fontSizeInput.value);
+  const font = fontSelect.value;
+
+  const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+  bgGrad.addColorStop(0, bgColor1.value);
+  bgGrad.addColorStop(1, bgColor2.value);
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, w, h);
+
+  const today = new Date();
+  const nextDay = new Date(today);
+  nextDay.setDate(today.getDate() + 1);
+
+  const dateStr = `${nextDay.getFullYear()}.${String(nextDay.getMonth()+1).padStart(2,'0')}.${String(nextDay.getDate()).padStart(2,'0')}.`;
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  if (font === 'Inter') {
+    ctx.font = `900 italic ${size}px 'Inter'`;
+  } else {
+    ctx.font = `900 ${size}px '${font}'`;
+  }
+
+  const txtGrad = ctx.createLinearGradient(0, h/2 - size/2, 0, h/2 + size/2);
+  txtGrad.addColorStop(0, txtColor1.value);
+  txtGrad.addColorStop(1, txtColor2.value);
+  if (glowEnabled.checked) {
+    ctx.shadowColor = glowColor.value;
+    ctx.shadowBlur = parseInt(glowSize.value);
+  } else {
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+  }
+  ctx.fillStyle = txtGrad;
+  ctx.fillText(dateStr, w / 2, h / 2);
+}
+
+function downloadImage() {
+  const link = document.createElement('a');
+  link.download = 'story-thumbnail.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+[bgColor1, bgColor2, txtColor1, txtColor2].forEach(el => {
+  el.addEventListener('input', () => {
+    updateHexLabels();
+    render();
+  });
+});
+
+[bgHex1, bgHex2, txtHex1, txtHex2].forEach((el, index) => {
+  const pickers = [bgColor1, bgColor2, txtColor1, txtColor2];
+
+  el.addEventListener('input', (e) => {
+    let val = e.target.value.trim();
+
+    // # 자동 추가
+    if (!val.startsWith('#')) {
+      val = '#' + val;
+    }
+
+    // 3자리 or 6자리 HEX만 허용
+    if (/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(val)) {
+      pickers[index].value = val;
+      e.target.value = val.toUpperCase();
+      render();
+    }
+  });
+});
+
+[fontSelect, fontSizeInput].forEach(el => el.addEventListener('input', render));
+
+[glowColor, glowEnabled, glowSize].forEach(el =>
+  el.addEventListener('input', () => {
+    updateHexLabels();
+    render();
+  })
+);
+
+glowHex.addEventListener('input', (e) => {
+  let val = e.target.value.trim();
+
+  if (!val.startsWith('#')) {
+    val = '#' + val;
+  }
+
+  if (/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(val)) {
+    glowColor.value = val;
+    e.target.value = val.toUpperCase();
+    render();
+  }
+});
+
+async function preloadFonts() {
+  await Promise.all([
+    document.fonts.load("900 175px Pretendard"),
+    document.fonts.load("900 italic 175px Inter"),
+    document.fonts.load("175px Jua"),
+    document.fonts.load("175px Sniglet")
+  ]);
+}
+
+window.onload = async () => {
+  await preloadFonts();
+  render();
+};
+</script>
+
+</body>
+</html>
