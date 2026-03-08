@@ -10,8 +10,18 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sniglet:wght@400;">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Jua:wght=400;">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Bagel+Fat+One">
 
 <style>
+
+/* 눈누 폰트 */
+@font-face {
+    font-family: 'ChangwonDanggamAsak';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/CWDangamAsac-Bold.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+}
+
 :root {
   --bg-deep: #02343F;
   --accent: #F0EDCC;
@@ -347,6 +357,8 @@ canvas {
       <option value="Pretendard" style="background-color: #02343F;">Pretendard</option>
       <option value="Jua" style="background-color: #02343F;">Jua</option>
       <option value="Sniglet" style="background-color: #02343F;">Sniglet</option>
+      <option value="ChangwonDanggamAsak" style="background-color: #02343F;">창원단감아삭체</option>
+      <option value="Bagel Fat One" style="background-color: #02343F;">Bagel Fat One</option>
     </select>
 
     <label style="margin-top: 4px;">Font Size (px)</label>
@@ -545,10 +557,12 @@ glowHex.addEventListener('input', (e) => {
 
 async function preloadFonts() {
   await Promise.all([
-    document.fonts.load("900 175px Pretendard"),
-    document.fonts.load("900 italic 175px Inter"),
-    document.fonts.load("175px Jua"),
-    document.fonts.load("175px Sniglet")
+    document.fonts.load("900 1px Pretendard"),
+    document.fonts.load("900 italic 1px Inter"),
+    document.fonts.load("1px Jua"),
+    document.fonts.load("1px Sniglet"),
+    document.fonts.load("1px 'Bagel Fat One'"),
+    document.fonts.load("1px ChangwonDanggamAsak")
   ]);
 }
 
